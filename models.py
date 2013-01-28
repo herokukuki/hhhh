@@ -17,9 +17,9 @@ class TorrentManager(models.Manager):
                                     port=TRANSMISSION_PORT)
 
     def get_or_create_from_torrentrpc(self, torrent):
-        obj, created = self.get_or_create(base_id=torrent.id,
-                                          date_added=torrent.date_added)
+        obj, created = self.get_or_create(base_id=torrent.id)
         obj.name = torrent.name
+        obj.date_added = torrent.date_added
         obj.hash = torrent.hashString
         obj.status = torrent.status
         obj.progress = torrent.progress
@@ -39,7 +39,7 @@ class Torrent(models.Model):
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=10, default='')
     progress = models.FloatField(default=0.0)
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(auto_now=True)
     objects = TorrentManager()
 
     class Meta:
