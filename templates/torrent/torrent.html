@@ -9,12 +9,14 @@
     $('#tasks').load('{% url torrent_torrent_list %}');
   }
   function searchTorrent(query, $element) {
-    query = query.replace(/ /g, '+').replace(/!/g, '');
     $element.attr('data-query', query);
+    query = query.replace(/ /g, '+');
     var feed = new google.feeds.Feed("http://torrentz.com/feedP?q=" + query);
     feed.setNumEntries(100);
     feed.load(function(result) {
       if (!result.error) {
+        var query = result.feed.description.replace(/ search$/, '');
+        var $element = $("*[data-query='" + query + "']")
         $element.empty();
         for (var i = 0; i < result.feed.entries.length; i++) {
           var entry = result.feed.entries[i];
@@ -23,14 +25,24 @@
           $element.append(
             $('<a>')
               .addClass('entry')
-              .attr({'href': '#' + hash, 'data-hash': hash, 'data-text': entry.title})
+              .attr({
+                'href': '#' + hash,
+                'data-hash': hash,
+                'data-text': entry.title,
+                'data-query': query,
+                'data-categories': entry.categories[0]
+              })
               .html(entry.title)
               .append($('<span>').addClass('pull-right muted').text(entry.content))
               .click(function(event) {
                 jQuery.get(
-                  '{% url torrent_torrent_action action='add' %}/'
-                  + $(this).attr('data-hash')
-                  + '?text=' + encodeURIComponent($(this).attr('data-text'))
+                  '{% url torrent_torrent_action action='add' %}/'+ $(this).attr('data-hash'),
+                  {
+                    'text': $(this).attr('data-text'),
+                    'query': $(this).attr('data-query'),
+                    'categories': $(this).attr('data-categories')
+                  },
+                  function(data) { $('#status').html(data); }
                 );
                 event.preventDefault();
                 return false;
@@ -59,6 +71,7 @@
   .task .progress { margin-bottom: 2px; width: 100px; }
   .search-result .entry { display: block; }
   #form-iframe { display: none; }
+  #status { font-size: 12px; }
   </style>
 {% endblock %}
 
@@ -78,6 +91,11 @@
         <input type="text" placeholder="Search" name="q"/>
         <div class="search-result"></div>
       </form>
+    </div>
+  </div>
+  <div class="navbar navbar-fixed-bottom navbar-inverse">
+    <div class="navbar-inner">
+      <a href="javascript:;" id="status" class="brand"></a>
     </div>
   </div>
   <iframe id="form-iframe" name="form-iframe"></iframe>

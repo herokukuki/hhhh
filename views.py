@@ -33,5 +33,8 @@ class TorrentAction(View):
         elif kwargs['action'] == 'add':
             text = request.GET['text'] if 'text' in request.GET else 'Magnet'
             magnet = "magnet:?xt=urn:btih:" + kwargs['hash'] + "&dn=" + text
-            result = Torrent.objects.client.add_torrent(magnet)
+            try:
+                result = Torrent.objects.client.add_torrent(magnet)
+            except Exception as e:
+                result = e
         return HttpResponse(result)
