@@ -12,6 +12,7 @@
     query = query.replace(/ /g, '+').replace(/!/g, '');
     $element.attr('data-query', query);
     var feed = new google.feeds.Feed("http://torrentz.com/feedP?q=" + query);
+    feed.setNumEntries(100);
     feed.load(function(result) {
       if (!result.error) {
         $element.empty();
