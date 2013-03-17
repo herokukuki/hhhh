@@ -13,8 +13,16 @@ TRANSMISSION_PORT = getattr(settings, 'TRANSMISSION_PORT', '9091')
 class TorrentManager(models.Manager):
     """Manager class for the `Torrent` objects.
     """
-    client = transmissionrpc.Client(TRANSMISSION_HOST,
-                                    port=TRANSMISSION_PORT)
+    _client = None
+    @property
+    def client(self):
+        if not self._client:
+            try:
+                self._client = transmissionrpc.Client(TRANSMISSION_HOST,
+                                                      port=TRANSMISSION_PORT)
+            except transmissionrpc.TransmissionError as e:
+                pass
+        return self._client
 
     def get_or_create_from_torrentrpc(self, torrent):
         obj, created = self.get_or_create(base_id=torrent.id)

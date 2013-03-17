@@ -10,6 +10,11 @@
           </span>
           <span class="muted pull-right span2">{{ torrent.status }}</span>
           <span class="muted pull-right span2">{{ torrent.date_added|date:'Y-m-d H:i' }}</span>
+          {% if torrent.status == 'stopped' %}
+            <a class="pull-right btn btn-mini btn-success" href="{% url torrent_torrent_action id=torrent.base_id action="start" %}" target="form-iframe">Start</a>
+          {% else %}
+            <a class="pull-right btn btn-mini btn-warning" href="{% url torrent_torrent_action id=torrent.base_id action="stop" %}" target="form-iframe">Stop</a>
+          {% endif %}
         </div>
       </td>
     </tr>
