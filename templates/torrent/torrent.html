@@ -53,8 +53,10 @@
     });
   }
   function initialise() {}
-  google.load("feeds", "1");
-  google.setOnLoadCallback(initialise);
+  if (typeof google != 'undefined') {
+    google.load("feeds", "1");
+    google.setOnLoadCallback(initialise);
+  }
   $(document).ready(function() {
     var refreshTasksThread = setInterval(refreshTasks, 1000);
     $('#search-form').submit(function(event) {
