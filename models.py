@@ -84,3 +84,9 @@ class Torrent(models.Model):
         if self.status == 'stopped':
             return 'progress-info'
         return ''
+
+    def fields(self):
+        return self.base()._fields
+
+    def base(self):
+        return Torrent.objects.client.get_torrent(self.base_id)
