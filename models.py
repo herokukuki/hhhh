@@ -26,12 +26,27 @@ class TorrentManager(models.Manager):
 
     def get_or_create_from_torrentrpc(self, torrent):
         obj, created = self.get_or_create(base_id=torrent.id)
-        obj.name = torrent.name
-        obj.date_added = torrent.date_added
-        obj.hash = torrent.hashString
-        obj.status = torrent.status
-        obj.progress = torrent.progress
-        obj.save()
+        dirty = False
+        if obj.name != torrent.name:
+            obj.name = torrent.name
+            dirty = True
+        if obj.date_added != torrent.date_added:
+            obj.date_added = torrent.date_added
+            dirty = True
+        if obj.hash != torrent.hashString:
+            obj.hash = torrent.hashString
+            dirty = True
+        if obj.status != torrent.status:
+            obj.status = torrent.status
+            dirty = True
+        if obj.progress != torrent.progress:
+            obj.progress = torrent.progress
+            dirty = True
+        if obj.deleted:
+            obj.deleted = False
+            dirty = True
+        if dirty:
+            obj.save()
         return obj, created
 
     def sync(self):
