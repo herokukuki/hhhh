@@ -82,7 +82,7 @@ class Torrent(models.Model):
         if self.status == 'seeding':
             return 'progress-success'
         if self.status == 'stopped':
-            return 'progress-info'
+            return 'progress-disabled'
         return ''
 
     def fields(self):

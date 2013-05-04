@@ -116,6 +116,16 @@
   .search-result .entry { display: block; }
   #form-iframe { display: none; }
   #status { font-size: 12px; }
+  .progress-disabled .bar, .progress .bar-disabled {
+      background-color: #888;
+      background-image: -moz-linear-gradient(top,#999,#777);
+      background-image: -webkit-gradient(linear,0 0,0 100%,from(#999),to(#777));
+      background-image: -webkit-linear-gradient(top,#999,#777);
+      background-image: -o-linear-gradient(top,#999,#777);
+      background-image: linear-gradient(to bottom,#999,#777);
+      background-repeat: repeat-x;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff999999',endColorstr='#ff777777',GradientType=0);
+  }
   </style>
 {% endblock %}
 
