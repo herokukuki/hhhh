@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db.models import Q
 from django.http import Http404, HttpResponse
-from django.views.generic import View, ListView
+from django.views.generic import View, ListView, DetailView
 
 from torrent.models import Torrent
 
@@ -15,11 +15,29 @@ TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', _DEFAULT_DIRS)
 
 
 class TorrentList(ListView):
+    def get_template_names(self, queryset=None):
+        if self.kwargs['format'] == 'json':
+            return ['torrent/torrent_list.json']
+        else:
+            return ['torrent/torrent_list.html']
+
     def get_queryset(self):
         if self.request.user.is_superuser:
             Torrent.objects.sync()
             return Torrent.objects.active()
         return Torrent.objects.none()
+
+
+class TorrentDetail(DetailView):
+    model = Torrent
+    slug_field = 'base_id'
+    slug_url_kwarg = 'id'
+
+    def get_template_names(self, queryset=None):
+        if self.request.is_ajax():
+            return ['torrent/torrent_detail_ajax.html']
+        else:
+            return ['torrent/torrent_detail.html']
 
 
 class TorrentAction(View):

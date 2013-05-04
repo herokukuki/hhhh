@@ -1,0 +1,10 @@
+[{% for object in object_list %}
+  {
+    "id": {{ object.base_id }},
+    "name": "{{ object.name }}",
+    "hash": "{{ object.hash }}",
+    "status": "{{ object.status }}",
+    "progress": {{ object.progress }},
+    "date_added": "{{ object.date_added|date:'Y-m-d H:i' }}"
+  }{% if not forloop.last %},{% endif %}
+{% endfor %}]

@@ -5,8 +5,37 @@
   <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" type="text/css" media="screen"/>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script lang="javascript">
-  function refreshTasks() {
+  function initialiseTasks() {
     $('#tasks').load('{% url torrent_torrent_list %}');
+  }
+  function refreshTasks() {
+    $.getJSON('{% url torrent_torrent_list format='json' %}', function(data) {
+      for (var i = 0; i < data.length; i++) {
+        var task = data[i];
+        var el = $(".task[data-id='" + task.id + "']");
+        if (el.length == 0) {
+          var $td = $('<td>');
+          $('#tasks').append($('<tr>').append($td));
+          $td.load('./' + task.id);
+          continue;
+        }
+        for (key in task) {
+          var value = task[key];
+          if (key == 'progress') {
+            el.find('.' + key + ' .bar').css({ width: value + '%' }).html(value + '%');
+          } else {
+            el.find('.' + key).html(value);
+          }
+          if (key == 'status') {
+            if (value == 'stopped') {
+              el.find('.action').removeClass('btn-warning').addClass('btn-success').html('Start').attr('href', 'action/' + task.id + '/start');
+            } else {
+              el.find('.action').removeClass('btn-success').addClass('btn-warning').html('Stop').attr('href', 'action/' + task.id + '/stop');
+            }
+          }
+        }
+      }
+    });
   }
   function searchTorrent(query, $element) {
     $element.attr('data-query', query);
@@ -58,6 +87,7 @@
     google.setOnLoadCallback(initialise);
   }
   $(document).ready(function() {
+    initialiseTasks();
     var refreshTasksThread = setInterval(refreshTasks, 1000);
     $('#search-form').submit(function(event) {
       searchTorrent($("input[name='q']", this).val(), $('.search-result', this));

@@ -1,0 +1,14 @@
+<div class="task" data-id="{{ object.base_id }}">
+  <span class="progress muted pull-right span1">
+    <span class="bar" style="width: {{ object.progress }}%">{{ object.progress }}%</span>
+  </span>
+  <span class="status muted pull-right span2">{{ object.status }}</span>
+  <span class="date_added muted pull-right span2">{{ object.date_added|date:'Y-m-d H:i' }}</span>
+  {% if object.status == 'stopped' %}
+    <a class="action pull-right btn btn-mini btn-success" href="{% url torrent_torrent_action id=object.base_id action="start" %}" target="form-iframe">Start</a>
+  {% else %}
+    <a class="action pull-right btn btn-mini btn-warning" href="{% url torrent_torrent_action id=object.base_id action="stop" %}" target="form-iframe">Stop</a>
+  {% endif %}
+  <a class="pull-right btn btn-mini btn-danger" href="{% url torrent_torrent_action id=object.base_id action="remove" %}" target="form-iframe">Remove</a>
+  <span class="name">{{ object.name }}</span>
+</div>
