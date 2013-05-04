@@ -5,6 +5,14 @@ from django.views.generic import View, ListView
 
 from torrent.models import Torrent
 
+_DEFAULT_DIR = '/home/media/downloads/'
+_DEFAULT_DIRS = {
+    'music': '/home/media/mlib',
+    'movie': '/home/media/mov/Movies',
+    'tv': '/home/media/mov/TV',
+}
+TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', _DEFAULT_DIRS)
+
 
 class TorrentList(ListView):
     def get_queryset(self):
@@ -33,8 +41,16 @@ class TorrentAction(View):
         elif kwargs['action'] == 'add':
             text = request.GET['text'] if 'text' in request.GET else 'Magnet'
             magnet = "magnet:?xt=urn:btih:" + kwargs['hash'] + "&dn=" + text
+            download_dir = _DEFAULT_DIR
+            for cat in request.GET['categories'].split():
+                if cat in TORRENT_DIRS:
+                    download_dir = TORRENT_DIRS[cat]
+                    break
             try:
-                result = Torrent.objects.client.add_torrent(magnet)
+                result = Torrent.objects.client.add_torrent(
+                    magnet,
+                    download_dir=download_dir
+                )
             except Exception as e:
                 result = e
         return HttpResponse(result)
