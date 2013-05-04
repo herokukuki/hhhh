@@ -35,8 +35,15 @@ class TorrentManager(models.Manager):
         return obj, created
 
     def sync(self):
+        ids = []
         for torrent in self.client.get_torrents():
+            ids.append(torrent.id)
             obj, craeted = self.get_or_create_from_torrentrpc(torrent)
+        self.exclude(base_id__in=ids).update(deleted=True)
+
+    def active(self):
+        qs = super(TorrentManager, self).get_query_set()
+        return qs.filter(deleted=False)
 
 
 class Torrent(models.Model):
@@ -45,9 +52,10 @@ class Torrent(models.Model):
     base_id = models.IntegerField(unique=True)
     hash = models.CharField(max_length=100, default='')
     name = models.CharField(max_length=200)
-    status = models.CharField(max_length=10, default='')
+    status = models.CharField(max_length=20, default='')
     progress = models.FloatField(default=0.0)
-    date_added = models.DateTimeField(auto_now=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    deleted = models.BooleanField(default=False)
     objects = TorrentManager()
 
     class Meta:

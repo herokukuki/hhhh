@@ -4,7 +4,6 @@
       <td>
         <div class="task"
            data-id="{{ torrent.base_id }}">
-          <span class="name">{{ torrent.name }}</span>
           <span class="progress muted pull-right span1">
             <span class="bar" style="width: {{ torrent.progress }}%">{{ torrent.progress }}%</span>
           </span>
@@ -15,6 +14,8 @@
           {% else %}
             <a class="pull-right btn btn-mini btn-warning" href="{% url torrent_torrent_action id=torrent.base_id action="stop" %}" target="form-iframe">Stop</a>
           {% endif %}
+          <a class="pull-right btn btn-mini btn-danger" href="{% url torrent_torrent_action id=torrent.base_id action="remove" %}" target="form-iframe">Remove</a>
+          <span class="name">{{ torrent.name }}</span>
         </div>
       </td>
     </tr>
