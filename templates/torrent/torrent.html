@@ -11,6 +11,7 @@
   }
   function refreshTasks() {
     $.getJSON('{% url torrent_torrent_list format='json' %}', function(data) {
+      $('.task').attr('data-stale', '');
       for (var i = 0; i < data.length; i++) {
         var task = data[i];
         var el = $(".task[data-id='" + task.id + "']");
@@ -21,6 +22,7 @@
           addedTasks.push(task.id);
           continue;
         }
+        el.removeAttr('data-stale');
         for (key in task) {
           var value = task[key];
           if (key == 'progress') {
@@ -40,6 +42,7 @@
           }
         }
       }
+      $('.task[data-stale]').parent().parent().remove();
     });
   }
   function searchTorrent(query, $element) {
