@@ -1,14 +1,18 @@
-<div class="task" data-id="{{ object.base_id }}">
-  <span class="progress muted pull-right span1">
-    <span class="bar" style="width: {{ object.progress }}%">{{ object.progress }}%</span>
+<div class="task" data-id="{{ object.base_id }}" title="Added {{ object.date_added|date:'Y-m-d H:i' }}">
+  <div class="name">{{ object.name }}</div>
+  <div class="meta muted">
+    <span class="status">{{ object.status }}</span>
+    - added <span class="date_added_timesince">{{ object.date_added|timesince }} ago</span>
+  </div>
+  <span class="span1 pull-right">
+    {% if object.status == 'stopped' %}
+      <a class="action" href="{% url torrent_torrent_action id=object.base_id action="start" %}" target="form-iframe"><span class="mini-icon mini-icon-arr-collapsed"></span></a>
+    {% else %}
+      <a class="action" href="{% url torrent_torrent_action id=object.base_id action="stop" %}" target="form-iframe"><span class="mini-icon mini-icon-block"></span></a>
+    {% endif %}
+    <a href="{% url torrent_torrent_action id=object.base_id action="remove" %}" target="form-iframe">
+      <span class="mini-icon mini-icon-remove-close"></span>
+    </a>
   </span>
-  <span class="status muted pull-right span2">{{ object.status }}</span>
-  <span class="date_added muted pull-right span2">{{ object.date_added|date:'Y-m-d H:i' }}</span>
-  {% if object.status == 'stopped' %}
-    <a class="action pull-right btn btn-mini btn-success" href="{% url torrent_torrent_action id=object.base_id action="start" %}" target="form-iframe">Start</a>
-  {% else %}
-    <a class="action pull-right btn btn-mini btn-warning" href="{% url torrent_torrent_action id=object.base_id action="stop" %}" target="form-iframe">Stop</a>
-  {% endif %}
-  <a class="pull-right btn btn-mini btn-danger" href="{% url torrent_torrent_action id=object.base_id action="remove" %}" target="form-iframe">Remove</a>
-  <span class="name">{{ object.name }}</span>
+  <div class="progress"><span class="bar" style="width: {{ object.progress }}%">{{ object.progress }}%</span></div>
 </div>

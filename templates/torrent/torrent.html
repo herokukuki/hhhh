@@ -2,7 +2,7 @@
 
 {% block extrahead %}
   {{ block.super }}
-  <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" type="text/css" media="screen"/>
+  <link rel="stylesheet" href="{{ STATIC_URL }}base/bootstrap/css/bootstrap-responsive.min.css" type="text/css" media="screen"/>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script lang="javascript">
   function initialiseTasks() {
@@ -28,9 +28,11 @@
           }
           if (key == 'status') {
             if (value == 'stopped') {
-              el.find('.action').removeClass('btn-warning').addClass('btn-success').html('Start').attr('href', 'action/' + task.id + '/start');
+              el.find('.action').attr('href', 'action/' + task.id + '/start');
+              el.find('.action .mini-icon').removeClass('mini-icon-block').addClass('mini-icon-arr-collapsed');
             } else {
-              el.find('.action').removeClass('btn-success').addClass('btn-warning').html('Stop').attr('href', 'action/' + task.id + '/stop');
+              el.find('.action').attr('href', 'action/' + task.id + '/stop');
+              el.find('.action .mini-icon').removeClass('mini-icon-arr-collapsed').addClass('mini-icon-block');
             }
           }
         }
@@ -100,8 +102,11 @@
   body { margin: 0px!important; padding: 0px!important; }
   .navbar-fixed-bottom, .navbar-fixed-top { margin-top: 0px!important; margin-bottom: 0px!important; position: fixed!important; }
   .tab-content { margin-top: 60px; margin-bottom: 40px; }
-  .task .progress { margin-bottom: 2px; width: 100px; }
-  .task .btn { margin-left: 2px; }
+  .task .status { text-transform: capitalize; }
+  .task .progress { margin-bottom: 2px; }
+  .task .btn { margin-left: 1px; padding: 0px 4px; }
+  .task .btn .icon { margin-top: -2px; }
+  .task .muted, .task .btn-mini, .task .progress .bar { font-size: 10.25px; }
   .search-result .entry { display: block; }
   #form-iframe { display: none; }
   #status { font-size: 12px; }

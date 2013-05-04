@@ -11,7 +11,7 @@ urlpatterns = patterns(
             TemplateView.as_view(template_name="torrent/torrent.html")),
         name='torrent',
     ),
-    url(r'^(?P<id>[0-9]+)',
+    url(r'^(?P<id>[0-9]+)$',
         view=login_required(TorrentDetail.as_view()),
         name='torrent_torrent_detail',
     ),
