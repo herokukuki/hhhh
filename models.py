@@ -59,4 +59,4 @@ class Torrent(models.Model):
     objects = TorrentManager()
 
     class Meta:
-        ordering = ['date_added']
+        ordering = ['-date_added']
