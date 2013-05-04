@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="{{ STATIC_URL }}base/bootstrap/css/bootstrap-responsive.min.css" type="text/css" media="screen"/>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script lang="javascript">
+  var addedTasks = new Array();
   function initialiseTasks() {
     $('#tasks').load('{% url torrent_torrent_list %}');
   }
@@ -13,10 +14,11 @@
       for (var i = 0; i < data.length; i++) {
         var task = data[i];
         var el = $(".task[data-id='" + task.id + "']");
-        if (el.length == 0) {
+        if (el.length == 0 && addedTasks.indexOf(task.id) == -1) {
           var $td = $('<td>');
-          $('#tasks table').append($('<tr>').append($td));
+          $('#tasks table').prepend($('<tr>').append($td));
           $td.load('./' + task.id);
+          addedTasks.push(task.id);
           continue;
         }
         for (key in task) {
