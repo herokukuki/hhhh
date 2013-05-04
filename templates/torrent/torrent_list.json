@@ -5,6 +5,7 @@
     "hash": "{{ object.hash }}",
     "status": "{{ object.status }}",
     "progress": {{ object.progress }},
+    "progress_css_class": "{{ object.progress_css_class }}",
     "date_added": "{{ object.date_added|date:'Y-m-d H:i' }}",
     "date_added_timesince": "{{ object.date_added|timesince }} ago"
   }{% if not forloop.last %},{% endif %}

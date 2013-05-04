@@ -15,13 +15,14 @@
         var el = $(".task[data-id='" + task.id + "']");
         if (el.length == 0) {
           var $td = $('<td>');
-          $('#tasks').append($('<tr>').append($td));
+          $('#tasks table').append($('<tr>').append($td));
           $td.load('./' + task.id);
           continue;
         }
         for (key in task) {
           var value = task[key];
           if (key == 'progress') {
+            el.find('.' + key).attr('class', 'progress ' + task.progress_css_class);
             el.find('.' + key + ' .bar').css({ width: value + '%' }).html(value + '%');
           } else {
             el.find('.' + key).html(value);

@@ -75,3 +75,12 @@ class Torrent(models.Model):
 
     class Meta:
         ordering = ['-date_added']
+
+    def progress_css_class(self):
+        if self.status == 'downloading':
+            return 'progress-striped active'
+        if self.status == 'seeding':
+            return 'progress-success'
+        if self.status == 'stopped':
+            return 'progress-info'
+        return ''
