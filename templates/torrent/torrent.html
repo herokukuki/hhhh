@@ -7,7 +7,7 @@
   <script lang="javascript">
   var addedTasks = new Array();
   function initialiseTasks() {
-    $('#tasks').load('{% url torrent_torrent_list %}');
+    $('#tasks div').hide().load('{% url torrent_torrent_list %}', function() { $('#tasks div').fadeIn(); resizeElements(); });
   }
   function refreshTasks() {
     $.getJSON('{% url torrent_torrent_list format='json' %}', function(data) {
@@ -18,7 +18,7 @@
         if (el.length == 0 && addedTasks.indexOf(task.id) == -1) {
           var $td = $('<td>');
           $('#tasks table').prepend($('<tr>').append($td));
-          $td.load('./' + task.id);
+          $td.hide().load('./' + task.id, function() { $("#tasks table td").fadeIn(); });
           addedTasks.push(task.id);
           continue;
         }
@@ -26,8 +26,8 @@
         for (key in task) {
           var value = task[key];
           if (key == 'progress') {
-            el.find('.' + key).attr('class', 'progress ' + task.progress_css_class);
-            el.find('.' + key + ' .bar').css({ width: value + '%' }).html(value + '%');
+            el.find('.' + key).attr('class', 'progress span11 ' + task.progress_css_class);
+            el.find('.' + key + ' .bar').css({ width: value + '%' }).html(task.progress_text + '%');
           } else {
             el.find('.' + key).html(value);
           }
@@ -42,7 +42,7 @@
           }
         }
       }
-      $('.task[data-stale]').parent().parent().remove();
+      $('.task[data-stale]').parent().parent().fadeOut(function() { $(this).remove() });
     });
   }
   function searchTorrent(query, $element) {
@@ -94,6 +94,9 @@
     google.load("feeds", "1");
     google.setOnLoadCallback(initialise);
   }
+  function resizeElements() {
+    $('.task .meta, .task .name').width($(window).width() - 20);
+  }
   $(document).ready(function() {
     initialiseTasks();
     var refreshTasksThread = setInterval(refreshTasks, 1000);
@@ -102,16 +105,19 @@
       event.preventDefault();
       return false;
     });
+    $(window).resize(resizeElements);
+    $(window).resize();
   });
   </script>
   <style>
   body { margin: 0px!important; padding: 0px!important; }
   .navbar-fixed-bottom, .navbar-fixed-top { margin-top: 0px!important; margin-bottom: 0px!important; position: fixed!important; }
-  .tab-content { margin-top: 60px; margin-bottom: 40px; }
+  .tab-content { margin-bottom: 40px; }
   .task .status { text-transform: capitalize; }
-  .task .progress { margin-bottom: 2px; }
+  .task .progress { margin-bottom: 2px; margin-left: 0px; }
   .task .btn { margin-left: 1px; padding: 0px 4px; }
   .task .btn .icon { margin-top: -2px; }
+  .task .meta, .task .name { overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .task .muted, .task .btn-mini, .task .progress .bar { font-size: 10.25px; }
   .search-result .entry { display: block; }
   #form-iframe { display: none; }
@@ -129,17 +135,19 @@
   </style>
 {% endblock %}
 
-{% block body %}
-  <div class="navbar navbar-fixed-top navbar-inverse">
-    <div class="navbar-inner">
-      <ul id="tabs" class="nav">
-        <li class="active"><a href="#tasks" data-toggle="tab">Tasks</a></li>
-        <li><a href="#search" data-toggle="tab">Search</a></li>
-      </ul>
-    </div>
-  </div>
+{% block container_class %}{% endblock %}
+{% block container_row_class %}{% endblock %}
+{% block content_class %}{% endblock %}
+
+{% block navigation %}
+  <ul id="tabs" class="nav">
+    <li class="active"><a href="#tasks" data-toggle="tab">Torrents</a></li>
+    <li><a href="#search" data-toggle="tab">Search</a></li>
+  </ul>
+{% endblock %}
+{% block content %}
   <div class="tab-content">
-    <div class="tab-pane active" id="tasks"></div>
+    <div class="tab-pane active" id="tasks"><div></div></div>
     <div class="tab-pane" id="search">
       <form id="search-form">
         <input type="text" placeholder="Search" name="q"/>

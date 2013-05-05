@@ -1,7 +1,7 @@
-<div class="task" data-id="{{ object.base_id }}" title="Added {{ object.date_added|date:'Y-m-d H:i' }}">
+<div class="task" data-id="{{ object.base_id }}">
   <div class="name">{{ object.name }}</div>
   <div class="meta muted">
-    <span class="status">{{ object.status }}</span>
+    <span class="status">{{ object.status }}</span> -
     <span class="left_size">{{ object.fields.leftUntilDone.value }}</span> left of
     <span class="total_size">{{ object.fields.totalSize.value }}</span>
     (&darr;<span class="rate_download">{{ object.fields.rateDownload.value }}</span>
