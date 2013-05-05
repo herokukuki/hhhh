@@ -18,6 +18,7 @@
     <a href="{% url torrent_torrent_action id=object.base_id action="remove" %}" target="form-iframe">
       <span class="mini-icon mini-icon-remove-close"></span>
     </a>
+    <a href="{{ object.file_url }}" target="_blank"><span class="mini-icon mini-icon-external-link"></span></a>
   </span>
   <div class="progress {{ object.progress_css_class }}"><span class="bar" style="width: {{ object.progress }}%">{{ object.progress }}%</span></div>
 </div>

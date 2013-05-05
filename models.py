@@ -1,6 +1,9 @@
 """
 Models for the Torrent app.
 """
+import os
+import re
+
 from django.conf import settings
 from django.db import models
 
@@ -96,3 +99,13 @@ class Torrent(models.Model):
 
     def base(self):
         return Torrent.objects.client.get_torrent(self.base_id)
+
+    def file_url(self):
+        return '/'.join([
+            re.sub(
+                settings.MEDIA_ROOT.rstrip(os.sep),
+                settings.MEDIA_URL.rstrip('/'),
+                self.fields()['downloadDir'].value
+            ).replace('\\', '/'),
+            self.name
+        ])
