@@ -9,7 +9,8 @@
     <span class="message text-error">{{ object.fields.errorString.value }}</span>
     - added <span class="date_added_timesince">{{ object.date_added|timesince }} ago</span>
   </div>
-  <span class="span1 pull-right">
+  <div class="progress span11 {{ object.progress_css_class }}"><span class="bar" style="width: {{ object.progress }}%">{{ object.progress|floatformat }}%</span></div>
+  <span class="span1">
     {% if object.status == 'stopped' %}
       <a class="action" href="{% url torrent_torrent_action id=object.base_id action="start" %}" target="form-iframe"><span class="mini-icon mini-icon-arr-collapsed"></span></a>
     {% else %}
@@ -20,5 +21,4 @@
     </a>
     <a href="{{ object.file_url }}" target="_blank"><span class="mini-icon mini-icon-external-link"></span></a>
   </span>
-  <div class="progress {{ object.progress_css_class }}"><span class="bar" style="width: {{ object.progress }}%">{{ object.progress }}%</span></div>
 </div>
