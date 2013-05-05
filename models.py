@@ -80,6 +80,7 @@ class Torrent(models.Model):
     progress = models.FloatField(default=0.0)
     date_added = models.DateTimeField(auto_now_add=True)
     deleted = models.BooleanField(default=False)
+    owners = models.ManyToManyField('auth.User', null=True, blank=True)
     objects = TorrentManager()
 
     class Meta:

@@ -22,9 +22,12 @@ class TorrentList(ListView):
             return ['torrent/torrent_list.html']
 
     def get_queryset(self):
-        if self.request.user.is_superuser:
+        if self.request.user.has_perm('torrent.change_torrent'):
             Torrent.objects.sync()
-            return Torrent.objects.active()
+            qs = Torrent.objects.active()
+            if self.request.user.is_superuser:
+                return qs
+            return qs.filter(owners=self.request.user)
         return Torrent.objects.none()
 
 
@@ -42,7 +45,7 @@ class TorrentDetail(DetailView):
 
 class TorrentAction(View):
     def get(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        if not request.user.has_perm('torrent.change_torrent'):
             return HttpResponse("You don't have the permissions to do that!")
         if kwargs['action'] in ['stop', 'start', 'remove']:
             try:
@@ -55,7 +58,12 @@ class TorrentAction(View):
         elif kwargs['action'] == 'start':
             result = Torrent.objects.client.start_torrent(torrent.base_id)
         elif kwargs['action'] == 'remove':
-            result = Torrent.objects.client.remove_torrent(torrent.base_id)
+            if self.request.user.is_superuser:
+                result = Torrent.objects.client.remove_torrent(torrent.base_id)
+            else:
+                torrent.owners.remove(self.request.user)
+                torrent.save()
+                result = torrent
         elif kwargs['action'] == 'add':
             text = request.GET['text'] if 'text' in request.GET else 'Magnet'
             magnet = "magnet:?xt=urn:btih:" + kwargs['hash'] + "&dn=" + text
@@ -64,8 +72,9 @@ class TorrentAction(View):
                 if cat in TORRENT_DIRS:
                     download_dir = TORRENT_DIRS[cat]
                     break
+            torrent = None
             try:
-                result = Torrent.objects.client.add_torrent(
+                base = Torrent.objects.client.add_torrent(
                     magnet,
                     download_dir=download_dir
                 )
