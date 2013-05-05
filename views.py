@@ -78,6 +78,17 @@ class TorrentAction(View):
                     magnet,
                     download_dir=download_dir
                 )
+                torrent, _c = Torrent.objects.get_or_create(
+                    hash=kwargs['hash'])
+                result = base
             except Exception as e:
-                result = e
+                try:
+                    torrent = Torrent.objects.get(hash=kwargs['hash'])
+                except Torrent.DoesNotExist as e:
+                    result = e
+                else:
+                    result = torrent
+            if torrent:
+                torrent.owners.add(self.request.user)
+                torrent.save()
         return HttpResponse(result)

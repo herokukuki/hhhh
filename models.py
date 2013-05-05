@@ -34,7 +34,7 @@ class TorrentManager(models.Manager):
         return self._client
 
     def get_or_create_from_torrentrpc(self, torrent):
-        obj, created = self.get_or_create(base_id=torrent.id)
+        obj, created = self.get_or_create(hash=torrent.hashString)
         dirty = False
         if obj.name != torrent.name:
             obj.name = torrent.name
@@ -42,8 +42,8 @@ class TorrentManager(models.Manager):
         if obj.date_added != torrent.date_added:
             obj.date_added = torrent.date_added
             dirty = True
-        if obj.hash != torrent.hashString:
-            obj.hash = torrent.hashString
+        if obj.base_id != torrent.id:
+            obj.base_id = torrent.id
             dirty = True
         if obj.status != torrent.status:
             obj.status = torrent.status
@@ -59,11 +59,11 @@ class TorrentManager(models.Manager):
         return obj, created
 
     def sync(self):
-        ids = []
+        hashes = []
         for torrent in self.client.get_torrents():
-            ids.append(torrent.id)
+            hashes.append(torrent.hashString)
             obj, craeted = self.get_or_create_from_torrentrpc(torrent)
-        self.exclude(base_id__in=ids).update(deleted=True)
+        self.exclude(hash__in=hashes).update(deleted=True)
 
     def active(self):
         qs = super(TorrentManager, self).get_query_set()
@@ -73,8 +73,8 @@ class TorrentManager(models.Manager):
 class Torrent(models.Model):
     """Proxy object for transmissionrpc's Torrent object.
     """
-    base_id = models.IntegerField(unique=True)
-    hash = models.CharField(max_length=100, default='')
+    base_id = models.IntegerField(default=-1)
+    hash = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=20, default='')
     progress = models.FloatField(default=0.0)
