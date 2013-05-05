@@ -8,6 +8,8 @@ import transmissionrpc
 
 TRANSMISSION_HOST = getattr(settings, 'TRANSMISSION_HOST', 'localhost')
 TRANSMISSION_PORT = getattr(settings, 'TRANSMISSION_PORT', '9091')
+TRANSMISSION_USER = getattr(settings, 'TRANSMISSION_USER', None)
+TRANSMISSION_PASS = getattr(settings, 'TRANSMISSION_PASS', None)
 
 
 class TorrentManager(models.Manager):
@@ -18,8 +20,12 @@ class TorrentManager(models.Manager):
     def client(self):
         if not self._client:
             try:
-                self._client = transmissionrpc.Client(TRANSMISSION_HOST,
-                                                      port=TRANSMISSION_PORT)
+                self._client = transmissionrpc.Client(
+                    address=TRANSMISSION_HOST,
+                    port=TRANSMISSION_PORT,
+                    user=TRANSMISSION_USER,
+                    password=TRANSMISSION_PASS
+                )
             except transmissionrpc.TransmissionError as e:
                 pass
         return self._client
