@@ -79,7 +79,7 @@
                     'query': $(this).attr('data-query'),
                     'categories': $(this).attr('data-categories')
                   },
-                  function(data) { $('#status').html(data); }
+                  function(data) { $('#status').text(data); }
                 );
                 event.preventDefault();
                 return false;
