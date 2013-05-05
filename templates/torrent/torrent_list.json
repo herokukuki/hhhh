@@ -1,17 +1,20 @@
 [{% for object in object_list %}
   {
+    {% with object.fields as fields %}
     "id": {{ object.base_id }},
     "name": "{{ object.name }}",
     "hash": "{{ object.hash }}",
     "status": "{{ object.status }}",
-    "total_size": "{{ object.fields.totalSize.value|filesizeformat }}",
-    "left_size": "{{ object.fields.leftUntilDone.value|filesizeformat }}",
-    "rate_download": "{{ object.fields.rateDownload.value|filesizeformat }}/s",
-    "rate_upload": "{{ object.fields.rateUpload.value|filesizeformat }}/s",
-    "message": "{{ object.fields.errorString.value }}",
+    "total_size": "{{ fields.totalSize.value|filesizeformat }}",
+    "left_size": "{{ fields.leftUntilDone.value|filesizeformat }}",
+    "rate_download": "{{ fields.rateDownload.value|filesizeformat }}/s",
+    "rate_upload": "{{ fields.rateUpload.value|filesizeformat }}/s",
+    "message": "{{ fields.errorString.value }}",
     "progress": {{ object.progress }},
+    "progress_text": {{ object.progress|floatformat }},
     "progress_css_class": "{{ object.progress_css_class }}",
     "date_added": "{{ object.date_added|date:'Y-m-d H:i' }}",
     "date_added_timesince": "{{ object.date_added|timesince }} ago"
+    {% endwith %}
   }{% if not forloop.last %},{% endif %}
 {% endfor %}]
