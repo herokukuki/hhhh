@@ -63,7 +63,7 @@ class TorrentManager(models.Manager):
         for torrent in self.client.get_torrents():
             hashes.append(torrent.hashString)
             obj, craeted = self.get_or_create_from_torrentrpc(torrent)
-        self.exclude(hash__in=hashes).update(deleted=True)
+        self.exclude(hash__in=hashes).update(deleted=True, base_id=-1)
 
     def active(self):
         qs = super(TorrentManager, self).get_query_set()

@@ -53,7 +53,8 @@ class TorrentAction(View):
             return HttpResponse("You don't have the permissions to do that!")
         if kwargs['action'] in ['stop', 'start', 'remove']:
             try:
-                torrent = Torrent.objects.get(base_id=kwargs['id'])
+                torrent = Torrent.objects.get(
+                    base_id=kwargs['id'], deleted=False)
             except Torrent.DoesNotExist as e:
                 raise Http404()
 
