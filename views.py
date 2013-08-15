@@ -8,14 +8,15 @@ from django.views.generic import View, ListView, DetailView
 from torrent.models import Torrent
 
 _DEFAULT_DIR = os.path.join(settings.MEDIA_ROOT, 'downloads')
-_DEFAULT_DIRS = {
-    'music': os.path.join(settings.MEDIA_ROOT, 'music'),
-    'movie': os.path.join(settings.MEDIA_ROOT, 'movies'),
-    'tv': os.path.join(settings.MEDIA_ROOT, 'tv'),
-    'ebooks': os.path.join(settings.MEDIA_ROOT, 'ebooks'),
-    'ebook': os.path.join(settings.MEDIA_ROOT, 'ebooks'),
-}
-TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', _DEFAULT_DIRS)
+_DEFAULT_DIRS = [
+    ('music', os.path.join(settings.MEDIA_ROOT, 'music')),
+    ('movie', os.path.join(settings.MEDIA_ROOT, 'movies')),
+    ('tv', os.path.join(settings.MEDIA_ROOT, 'tv')),
+    ('ebooks', os.path.join(settings.MEDIA_ROOT, 'ebooks')),
+    ('ebook', os.path.join(settings.MEDIA_ROOT, 'ebooks')),
+]
+TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', [])
+TORRENT_DIRS += _DEFAULT_DIRS
 
 
 class TorrentList(ListView):
@@ -73,10 +74,11 @@ class TorrentAction(View):
             text = request.GET['text'] if 'text' in request.GET else 'Magnet'
             magnet = "magnet:?xt=urn:btih:" + kwargs['hash'] + "&dn=" + text
             download_dir = _DEFAULT_DIR
-            for cat in request.GET['categories'].split():
-                if cat in TORRENT_DIRS:
-                    download_dir = TORRENT_DIRS[cat]
-                    break
+            cats = request.GET['categories'].split()
+            for pair in TORRENT_DIRS:
+                if pair[0] in cats:
+                   download_dir = pair[1]
+                   break
             torrent = None
             try:
                 base = Torrent.objects.client.add_torrent(
