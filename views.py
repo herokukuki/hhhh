@@ -5,15 +5,15 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.views.generic import View, ListView, DetailView
 
-from torrent.models import Torrent
+from torrent.models import Torrent, TRANSMISSION_DOWNLOAD_ROOT
 
-_DEFAULT_DIR = os.path.join(settings.MEDIA_ROOT, 'downloads')
+_DEFAULT_DIR = os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'downloads')
 _DEFAULT_DIRS = [
-    ('music', os.path.join(settings.MEDIA_ROOT, 'music')),
-    ('movie', os.path.join(settings.MEDIA_ROOT, 'movies')),
-    ('tv', os.path.join(settings.MEDIA_ROOT, 'tv')),
-    ('ebooks', os.path.join(settings.MEDIA_ROOT, 'ebooks')),
-    ('ebook', os.path.join(settings.MEDIA_ROOT, 'ebooks')),
+    ('music', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'music')),
+    ('movie', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'movies')),
+    ('tv', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'tv')),
+    ('ebooks', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'ebooks')),
+    ('ebook', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'ebooks')),
 ]
 TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', [])
 TORRENT_DIRS += _DEFAULT_DIRS

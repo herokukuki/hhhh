@@ -13,6 +13,10 @@ TRANSMISSION_HOST = getattr(settings, 'TRANSMISSION_HOST', 'localhost')
 TRANSMISSION_PORT = getattr(settings, 'TRANSMISSION_PORT', '9091')
 TRANSMISSION_USER = getattr(settings, 'TRANSMISSION_USER', None)
 TRANSMISSION_PASS = getattr(settings, 'TRANSMISSION_PASS', None)
+TRANSMISSION_DOWNLOAD_ROOT = getattr(settings, 'TRANSMISSION_DOWNLOAD_ROOT',
+                                     settings.MEDIA_ROOT)
+TRANSMISSION_DOWNLOAD_URL = getattr(settings, 'TRANSMISSION_DOWNLOAD_URL',
+                                    settings.MEDIA_URL)
 
 
 class TorrentManager(models.Manager):
@@ -108,8 +112,8 @@ class Torrent(models.Model):
     def file_url(self):
         return '/'.join([
             re.sub(
-                settings.MEDIA_ROOT.rstrip(os.sep),
-                settings.MEDIA_URL.rstrip('/'),
+                TRANSMISSION_DOWNLOAD_ROOT.rstrip(os.sep),
+                TRANSMISSION_DOWNLOAD_URL.rstrip('/'),
                 self.fields()['downloadDir'].value
             ).replace('\\', '/'),
             self.name
