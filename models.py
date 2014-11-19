@@ -1,6 +1,7 @@
 """
 Models for the Torrent app.
 """
+import dateutil.tz
 import os
 import re
 
@@ -43,8 +44,16 @@ class TorrentManager(models.Manager):
         if obj.name != torrent.name:
             obj.name = torrent.name
             dirty = True
-        if obj.date_added != torrent.date_added:
-            obj.date_added = torrent.date_added
+        d = torrent.date_added
+        # Offset back to UTC
+        if d.tzinfo:
+            d = d.astimezone(dateutil.tz.tzutc())
+        else:
+            d = d.replace(tzinfo=dateutil.tz.tzutc())
+        if not settings.USE_TZ:
+            d = d.replace(tzinfo=None)
+        if obj.date_added != d:
+            obj.date_added = d
             dirty = True
         if obj.base_id != torrent.id:
             obj.base_id = torrent.id
