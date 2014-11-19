@@ -12,11 +12,11 @@
   <div class="progress span11 {{ object.progress_css_class }}"><span class="bar" style="width: {{ object.progress }}%">{{ object.progress|floatformat }}%</span></div>
   <span class="span1">
     {% if object.status == 'stopped' %}
-      <a class="action" href="{% url torrent_torrent_action id=object.base_id action="start" %}" target="form-iframe"><span class="mini-icon mini-icon-arr-collapsed"></span></a>
+      <a class="action" href="{% url 'torrent_torrent_action' id=object.base_id action="start" %}" target="form-iframe"><span class="mini-icon mini-icon-arr-collapsed"></span></a>
     {% else %}
-      <a class="action" href="{% url torrent_torrent_action id=object.base_id action="stop" %}" target="form-iframe"><span class="mini-icon mini-icon-block"></span></a>
+      <a class="action" href="{% url 'torrent_torrent_action' id=object.base_id action="stop" %}" target="form-iframe"><span class="mini-icon mini-icon-block"></span></a>
     {% endif %}
-    <a href="{% url torrent_torrent_action id=object.base_id action="remove" %}" target="form-iframe">
+    <a href="{% url 'torrent_torrent_action' id=object.base_id action="remove" %}" target="form-iframe">
       <span class="mini-icon mini-icon-remove-close"></span>
     </a>
     <a href="{{ object.file_url }}" target="_blank"><span class="mini-icon mini-icon-external-link"></span></a>

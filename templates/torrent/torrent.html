@@ -6,10 +6,10 @@
   <script lang="javascript">
   var addedTasks = new Array();
   function initialiseTasks() {
-    $('#tasks div').hide().load('{% url torrent_torrent_list %}', function() { $('#tasks div').fadeIn(); resizeElements(); });
+    $('#tasks div').hide().load('{% url 'torrent_torrent_list' %}', function() { $('#tasks div').fadeIn(); resizeElements(); });
   }
   function refreshTasks() {
-    $.getJSON('{% url torrent_torrent_list format='json' %}', function(data) {
+    $.getJSON('{% url 'torrent_torrent_list' format='json' %}', function(data) {
       $('.task').attr('data-stale', '');
       for (var i = 0; i < data.length; i++) {
         var task = data[i];
@@ -72,7 +72,7 @@
               .append($('<span>').addClass('pull-right muted').text(entry.content))
               .click(function(event) {
                 jQuery.get(
-                  '{% url torrent_torrent_action action='add' %}/'+ $(this).attr('data-hash'),
+                  '{% url 'torrent_torrent_action' action='add' %}/'+ $(this).attr('data-hash'),
                   {
                     'text': $(this).attr('data-text'),
                     'query': $(this).attr('data-query'),
