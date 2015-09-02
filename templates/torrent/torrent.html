@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block extrahead %}
+{% block scripts %}
   {{ block.super }}
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script lang="javascript">
   var addedTasks = new Array();
   function initialiseTasks() {
-    $('#tasks div').hide().load('{% url 'torrent_torrent_list' %}', function() { $('#tasks div').fadeIn(); resizeElements(); });
+    $('#tasks div').load('{% url 'torrent_torrent_list' %}', function(){resizeElements()});
   }
   function refreshTasks() {
     $.getJSON('{% url 'torrent_torrent_list' format='json' %}', function(data) {
@@ -17,7 +17,7 @@
         if (el.length == 0 && addedTasks.indexOf(task.id) == -1) {
           var $td = $('<td>');
           $('#tasks table').prepend($('<tr>').append($td));
-          $td.hide().load('./' + task.id, function() { $("#tasks table td").fadeIn(); });
+          $td.load('./' + task.id);
           addedTasks.push(task.id);
           continue;
         }
@@ -25,23 +25,29 @@
         for (key in task) {
           var value = task[key];
           if (key == 'progress') {
-            el.find('.' + key).attr('class', 'progress span11 ' + task.progress_css_class);
-            el.find('.' + key + ' .bar').css({ width: value + '%' }).html(task.progress_text + '%');
+            el.find('.' + key).attr('class', 'progress ' + task.progress_css_class);
+            el.find('.' + key + ' .progress-bar').css({ width: value + '%' }).html(task.progress_text + '%');
           } else {
             el.find('.' + key).html(value);
           }
           if (key == 'status') {
             if (value == 'stopped') {
-              el.find('.action').attr('href', 'action/' + task.id + '/start');
-              el.find('.action .mini-icon').removeClass('mini-icon-block').addClass('mini-icon-arr-collapsed');
+              el.find('.action')
+                .attr('href', 'action/' + task.id + '/start')
+                .removeClass('btn-warning').addClass('btn-success')
+                .find('.glyphicon').removeClass('glyphicon-pause').addClass('glyphicon-play')
+                .parent().contents().last().replaceWith('start');
             } else {
-              el.find('.action').attr('href', 'action/' + task.id + '/stop');
-              el.find('.action .mini-icon').removeClass('mini-icon-arr-collapsed').addClass('mini-icon-block');
+              el.find('.action')
+                .attr('href', 'action/' + task.id + '/stop')
+                .removeClass('btn-success').addClass('btn-warning')
+                .find('.glyphicon').removeClass('glyphicon-play').addClass('glyphicon-pause')
+                .parent().contents().last().replaceWith('pause');
             }
           }
         }
       }
-      $('.task[data-stale]').parent().parent().fadeOut(function() { $(this).remove() });
+      $('.task[data-stale]').parent().parent().remove();
     });
   }
   function searchTorrent(query, $element) {
@@ -94,7 +100,7 @@
     google.setOnLoadCallback(initialise);
   }
   function resizeElements() {
-    $('.task .meta, .task .name').width($(window).width() - 20);
+    $('.task .meta, .task .name').width($('.container').first().width() - 20);
   }
   $(document).ready(function() {
     initialiseTasks();
@@ -108,20 +114,26 @@
     $(window).resize();
   });
   </script>
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
   <style>
   body { margin: 0px!important; padding: 0px!important; }
   .navbar-fixed-bottom, .navbar-fixed-top { margin-top: 0px!important; margin-bottom: 0px!important; position: fixed!important; }
+  .table td { padding: 4px 0px!important; }
   .tab-content { margin-bottom: 40px; }
   .task .status { text-transform: capitalize; }
   .task .progress { margin-bottom: 2px; margin-left: 0px; }
   .task .btn { margin-left: 1px; padding: 0px 4px; }
   .task .btn .icon { margin-top: -2px; }
-  .task .meta, .task .name { overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .task .muted, .task .btn-mini, .task .progress .bar { font-size: 10.25px; }
+  .task .meta, .task .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .task .actions .btn { width: 82px; }
+  .task .actions.list-inline { margin: 3px 0px; }
   .search-result .entry { display: block; }
   #form-iframe { display: none; }
   #status { font-size: 12px; }
-  .progress-disabled .bar, .progress .bar-disabled {
+  .progress-disabled .progress-bar, .progress .progress-bar-disabled {
       background-color: #888;
       background-image: -moz-linear-gradient(top,#999,#777);
       background-image: -webkit-gradient(linear,0 0,0 100%,from(#999),to(#777));
@@ -139,17 +151,18 @@
 {% block content_class %}{% endblock %}
 
 {% block navigation %}
-  <ul id="tabs" class="nav">
+  <ul id="tabs" class="nav navbar-nav navbar-left">
     <li class="active"><a href="#tasks" data-toggle="tab">Torrents</a></li>
     <li><a href="#search" data-toggle="tab">Search</a></li>
   </ul>
 {% endblock %}
+
 {% block content %}
   <div class="tab-content">
     <div class="tab-pane active" id="tasks"><div></div></div>
     <div class="tab-pane" id="search">
       <form id="search-form">
-        <input type="text" placeholder="Search" name="q"/>
+        <input class="form-control" type="text" placeholder="Search" name="q"/>
         <div class="search-result"></div>
       </form>
     </div>
