@@ -1,24 +1,30 @@
-<div class="task" data-id="{{ object.base_id }}">
-  <div class="name">{{ object.name }}</div>
-  <div class="meta muted">
-    <span class="status">{{ object.status }}</span> -
-    <span class="left_size">{{ object.fields.leftUntilDone.value }}</span> left of
-    <span class="total_size">{{ object.fields.totalSize.value }}</span>
-    (&darr;<span class="rate_download">{{ object.fields.rateDownload.value }}</span>
-    &uarr;<span class="rate_upload">{{ object.fields.rateUpload.value }}</span>)
-    <span class="message text-error">{{ object.fields.errorString.value }}</span>
-    - added <span class="date_added_timesince">{{ object.date_added|timesince }} ago</span>
+<div class="task container" data-id="{{ object.base_id }}">
+  <div class="media row">
+    <div class="media-body col-lg-11 col-md-11 col-sm-11 col-xs-12">
+      <h4 class="name media-heading">{{ object.name }}</h4>
+      <div class="meta text-muted">
+        <span class="status">{{ object.status }}</span> -
+        <span class="left_size">{{ object.fields.leftUntilDone.value }}</span> left of
+        <span class="total_size">{{ object.fields.totalSize.value }}</span>
+        (&darr;<span class="rate_download">{{ object.fields.rateDownload.value }}</span>
+        &uarr;<span class="rate_upload">{{ object.fields.rateUpload.value }}</span>)
+        <span class="message text-danger">{{ object.fields.errorString.value }}</span>
+        - added <span class="date_added_timesince">{{ object.date_added|timesince }} ago</span>
+      </div>
+      <div class="progress {{ object.progress_css_class }}"><div class="progress-bar" style="width: {{ object.progress }}%">{{ object.progress|floatformat }}%</div></div>
+    </div>
+    <div class="media-right col-lg-1 col-md-1 col-sm-1 col-xs-12">
+      <ul class="list-inline actions">
+        <li>
+        {% if object.status == 'stopped' %}
+          <a class="action btn btn-xs btn-success" href="{% url 'torrent_torrent_action' id=object.base_id action="start" %}" target="form-iframe"><span class="pull-left glyphicon glyphicon-play"></span> start</a>
+        {% else %}
+          <a class="action btn btn-xs btn-warning" href="{% url 'torrent_torrent_action' id=object.base_id action="stop" %}" target="form-iframe"><span class="pull-left glyphicon glyphicon-pause"></span> pause</a>
+        {% endif %}
+        </li>
+        <li><a class="btn btn-xs btn-danger" href="{% url 'torrent_torrent_action' id=object.base_id action="remove" %}" target="form-iframe"><span class="pull-left glyphicon glyphicon-trash"></span> remove</a></li>
+        <li><a class="btn btn-xs btn-primary" href="{{ object.file_url }}" target="_blank"><span class="pull-left glyphicon glyphicon-folder-open"></span> open</a></li>
+      </ul>
+    </div>
   </div>
-  <div class="progress span11 {{ object.progress_css_class }}"><span class="bar" style="width: {{ object.progress }}%">{{ object.progress|floatformat }}%</span></div>
-  <span class="span1">
-    {% if object.status == 'stopped' %}
-      <a class="action" href="{% url 'torrent_torrent_action' id=object.base_id action="start" %}" target="form-iframe"><span class="mini-icon mini-icon-arr-collapsed"></span></a>
-    {% else %}
-      <a class="action" href="{% url 'torrent_torrent_action' id=object.base_id action="stop" %}" target="form-iframe"><span class="mini-icon mini-icon-block"></span></a>
-    {% endif %}
-    <a href="{% url 'torrent_torrent_action' id=object.base_id action="remove" %}" target="form-iframe">
-      <span class="mini-icon mini-icon-remove-close"></span>
-    </a>
-    <a href="{{ object.file_url }}" target="_blank"><span class="mini-icon mini-icon-external-link"></span></a>
-  </span>
 </div>
