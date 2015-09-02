@@ -5,6 +5,7 @@
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script lang="javascript">
   var addedTasks = new Array();
+  var refreshTasksThread = null;
   function initialiseTasks() {
     $('#tasks div').load('{% url 'torrent_torrent_list' %}', function(){resizeElements()});
   }
@@ -48,6 +49,7 @@
         }
       }
       $('.task[data-stale]').parent().parent().remove();
+      refreshTasksThread = setTimeout(refreshTasks, 1000);
     });
   }
   function searchTorrent(query, $element) {
@@ -104,7 +106,7 @@
   }
   $(document).ready(function() {
     initialiseTasks();
-    var refreshTasksThread = setInterval(refreshTasks, 1000);
+    refreshTasksThread = setTimeout(refreshTasks, 1000);
     $('#search-form').submit(function(event) {
       searchTorrent($("input[name='q']", this).val(), $('.search-result', this));
       event.preventDefault();
