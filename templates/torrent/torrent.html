@@ -7,7 +7,10 @@
   var addedTasks = new Array();
   var refreshTasksThread = null;
   function initialiseTasks() {
-    $('#tasks div').load('{% url 'torrent_torrent_list' %}', function(){resizeElements()});
+    $('#tasks div').load('{% url 'torrent_torrent_list' %}', function(){
+      resizeElements()
+      refreshTasksThread = setTimeout(refreshTasks, 1000);
+    });
   }
   function refreshTasks() {
     $.getJSON('{% url 'torrent_torrent_list' format='json' %}', function(data) {
@@ -106,7 +109,6 @@
   }
   $(document).ready(function() {
     initialiseTasks();
-    refreshTasksThread = setTimeout(refreshTasks, 1000);
     $('#search-form').submit(function(event) {
       searchTorrent($("input[name='q']", this).val(), $('.search-result', this));
       event.preventDefault();
