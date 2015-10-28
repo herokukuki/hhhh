@@ -71,7 +71,7 @@
           var hash = match[1];
           $element.append(
             $('<a>')
-              .addClass('entry')
+              .addClass('entry list-group-item')
               .attr({
                 'href': '#' + hash,
                 'data-hash': hash,
@@ -165,9 +165,11 @@
   <div class="tab-content">
     <div class="tab-pane active" id="tasks"><div></div></div>
     <div class="tab-pane" id="search">
-      <form id="search-form">
-        <input class="form-control" type="text" placeholder="Search" name="q"/>
-        <div class="search-result"></div>
+      <form id="search-form form-horizontal">
+        <div class="form-group">
+          <input class="form-control col-md-12" type="text" placeholder="Search" name="q"/>
+        </div>
+        <div class="search-result list-group col-md-12"></div>
       </form>
     </div>
   </div>
