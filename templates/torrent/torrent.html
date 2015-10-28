@@ -165,15 +165,17 @@
   <div class="tab-content">
     <div class="tab-pane active" id="tasks"><div></div></div>
     <div class="tab-pane" id="search">
-      <form id="search-form form-horizontal">
+      <form id="search-form" class="form-horizontal">
         <div class="form-group">
-          <input class="form-control col-md-12" type="text" placeholder="Search" name="q"/>
+          <div class="col-md-12">
+            <input class="form-control col-md-12" type="text" placeholder="Search" name="q"/>
+          </div>
         </div>
         <div class="search-result list-group col-md-12"></div>
       </form>
     </div>
   </div>
-  <div class="navbar navbar-fixed-bottom navbar-inverse">
+  <div class="navbar navbar-fixed-bottom navbar-default">
     <div class="navbar-inner">
       <a href="javascript:;" id="status" class="brand"></a>
     </div>
