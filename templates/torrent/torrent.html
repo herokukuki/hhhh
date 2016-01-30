@@ -7,9 +7,15 @@
   var addedTasks = new Array();
   var refreshTasksThread = null;
   function initialiseTasks() {
-    $('#tasks div').load('{% url 'torrent_torrent_list' %}', function(){
+    $('#tasks div').load('{% url 'torrent_torrent_list' %}')
+    .done(function(){
+      $('#status').empty()
       resizeElements()
       refreshTasksThread = setTimeout(refreshTasks, 1000);
+    })
+    .fail(function(){
+      $('#status').html('Failed to load torrent list. Retrying...')
+      initialiseTasks();
     });
   }
   function refreshTasks() {
