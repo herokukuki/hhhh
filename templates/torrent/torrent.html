@@ -89,7 +89,7 @@
                 'data-hash': hash,
                 'data-text': entry.title,
                 'data-query': query,
-                'data-categories': entry.categories[0]
+                'data-categories': entry.categories.join(' ')
               })
               .html(entry.title)
               .append($('<span>').addClass('pull-right muted').text(entry.content))
