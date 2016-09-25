@@ -73,7 +73,8 @@
     feed.setNumEntries(100);
     feed.load(function(result) {
       if (!result.error) {
-        var query = result.feed.description.replace(/ search$/, '');
+        //var query = result.feed.description.replace(/ search$/, '');
+        var query = result.feed.description.replace(/^Search: /, '');
         var $element = $("*[data-query='" + query + "']")
         $element.empty();
         for (var i = 0; i < result.feed.entries.length; i++) {
