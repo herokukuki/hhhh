@@ -80,7 +80,7 @@
         for (var i = 0; i < result.feed.entries.length; i++) {
           var entry = result.feed.entries[i];
           var match = entry.link.match(/([0-9a-fA-F]{40})/);
-          var hash = match[1];
+          var hash = match[1].toLowerCase();
           $element.append(
             $('<a>')
               .addClass('entry list-group-item')
