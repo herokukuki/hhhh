@@ -5,18 +5,7 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse
 from django.views.generic import View, ListView, DetailView
 
-from torrent.models import Torrent, TRANSMISSION_DOWNLOAD_ROOT
-
-_DEFAULT_DIR = os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'downloads')
-_DEFAULT_DIRS = [
-    ('music', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'music')),
-    ('movie', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'movies')),
-    ('tv', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'tv')),
-    ('ebooks', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'ebooks')),
-    ('ebook', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'ebooks')),
-]
-TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', [])
-TORRENT_DIRS += _DEFAULT_DIRS
+from torrent.models import Torrent, TORRENT_DIRS, DEFAULT_DIR
 
 
 class TorrentList(ListView):
@@ -73,7 +62,7 @@ class TorrentAction(View):
         elif kwargs['action'] == 'add':
             text = request.GET['text'] if 'text' in request.GET else 'Magnet'
             magnet = "magnet:?xt=urn:btih:" + kwargs['hash'] + "&dn=" + text
-            download_dir = _DEFAULT_DIR
+            download_dir = DEFAULT_DIR
             cats = request.GET['categories'].split()
             for pair in TORRENT_DIRS:
                 if pair[0] in cats:
@@ -85,8 +74,8 @@ class TorrentAction(View):
                     magnet,
                     download_dir=download_dir
                 )
-                torrent, _c = Torrent.objects.get_or_create(
-                    hash=kwargs['hash'])
+                torrent, _c = Torrent.objects.get_or_create_from_torrentrpc(
+                    base)
                 result = base
             except Exception as e:
                 try:

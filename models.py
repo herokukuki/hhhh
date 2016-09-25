@@ -1,9 +1,11 @@
 """
 Models for the Torrent app.
 """
+from datetime import timedelta, datetime
 import dateutil.tz
 import os
 import re
+import logging
 
 from django.conf import settings
 from django.db import models
@@ -18,6 +20,17 @@ TRANSMISSION_DOWNLOAD_ROOT = getattr(settings, 'TRANSMISSION_DOWNLOAD_ROOT',
                                      settings.MEDIA_ROOT)
 TRANSMISSION_DOWNLOAD_URL = getattr(settings, 'TRANSMISSION_DOWNLOAD_URL',
                                     settings.MEDIA_URL)
+
+DEFAULT_DIR = os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'downloads')
+_DEFAULT_DIRS = [
+    ('music', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'music')),
+    ('movie', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'movies')),
+    ('tv', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'tv')),
+    ('ebooks', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'ebooks')),
+    ('ebook', os.path.join(TRANSMISSION_DOWNLOAD_ROOT, 'ebooks')),
+]
+TORRENT_DIRS = getattr(settings, 'TORRENT_DIRS', [])
+TORRENT_DIRS += _DEFAULT_DIRS
 
 
 class TorrentManager(models.Manager):
@@ -35,6 +48,7 @@ class TorrentManager(models.Manager):
                     password=TRANSMISSION_PASS
                 )
             except transmissionrpc.TransmissionError as e:
+                logging.exception(e)
                 pass
         return self._client
 
@@ -67,6 +81,35 @@ class TorrentManager(models.Manager):
         if obj.deleted:
             obj.deleted = False
             dirty = True
+
+        download_dir = obj.download_dir().rstrip(os.sep)
+        for d in TORRENT_DIRS:
+            if d[1] != download_dir:
+                # These are not the droids you are looking for, move along
+                continue
+            if len(d) > 3:
+                secs = d[3]
+                now = datetime.now()
+                if obj.base().date_done + timedelta(seconds=secs) < now:
+                    # Past the expiration date
+                    logging.info('%s has expired, removing', obj)
+                    result = self.client.remove_torrent(obj.base_id)
+                    logging.info('Result: %s', result)
+                    obj.deleted = True
+                    obj.base_id = -1
+                    dirty = True
+                    break
+            if len(d) > 2:
+                secs = d[2]
+                now = datetime.now()
+                if obj.base().date_done + timedelta(seconds=secs) < now:
+                    # Past the expiration date
+                    logging.debug('%s has expired, ignoring', obj)
+                    obj.deleted = True
+                    obj.base_id = -1
+                    dirty = True
+                    break
+
         if dirty:
             obj.save()
         return obj, created
@@ -74,9 +117,12 @@ class TorrentManager(models.Manager):
     def sync(self):
         hashes = []
         for torrent in self.client.get_torrents():
-            hashes.append(torrent.hashString)
+            logging.debug('Processiong %s', torrent)
             obj, craeted = self.get_or_create_from_torrentrpc(torrent)
-        self.exclude(hash__in=hashes).update(deleted=True, base_id=-1)
+            if not obj.deleted:
+                hashes.append(torrent.hashString)
+        qs = self.exclude(hash__in=hashes).exclude(deleted=True)
+        logging.info('Updated %d torrents', qs.update(deleted=True, base_id=-1))
 
     def active(self):
         qs = super(TorrentManager, self).get_query_set()
@@ -118,12 +164,15 @@ class Torrent(models.Model):
     def base(self):
         return Torrent.objects.client.get_torrent(self.base_id)
 
+    def download_dir(self):
+        return self.fields()['downloadDir'].value
+
     def file_url(self):
         return '/'.join([
             re.sub(
                 TRANSMISSION_DOWNLOAD_ROOT.rstrip(os.sep),
                 TRANSMISSION_DOWNLOAD_URL.rstrip('/'),
-                self.fields()['downloadDir'].value
+                self.download_dir()
             ).replace('\\', '/'),
             self.name
         ])
