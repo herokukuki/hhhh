@@ -122,7 +122,9 @@ class TorrentManager(models.Manager):
             if not obj.deleted:
                 hashes.append(torrent.hashString)
         qs = self.exclude(hash__in=hashes).exclude(deleted=True)
-        logging.info('Updated %d torrents', qs.update(deleted=True, base_id=-1))
+        updated = qs.update(deleted=True, base_id=-1)
+        if updated > 0:
+            logging.info('Updated %d torrents', updated)
 
     def active(self):
         qs = super(TorrentManager, self).get_query_set()
