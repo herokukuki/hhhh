@@ -69,7 +69,7 @@
   function searchTorrent(query, $element) {
     $element.attr('data-query', query);
     query = query.replace(/ /g, '+');
-    var feed = new google.feeds.Feed("http://torrentz.com/feedP?q=" + query);
+    var feed = new google.feeds.Feed("https://torrentzeu.to/rss/search?q=" + query);
     feed.setNumEntries(100);
     feed.load(function(result) {
       if (!result.error) {
