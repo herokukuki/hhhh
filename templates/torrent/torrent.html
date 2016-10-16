@@ -21,6 +21,9 @@
   function refreshTasks() {
     $.getJSON('{% url 'torrent_torrent_list' format='json' %}', function(data) {
       $('.task').attr('data-stale', '');
+      var numTasks = 0;
+      var totalDownloadRate = 0;
+      var totalUploadRate = 0;
       for (var i = 0; i < data.length; i++) {
         var task = data[i];
         var el = $(".task[data-id='" + task.id + "']");
@@ -32,6 +35,8 @@
           continue;
         }
         el.removeAttr('data-stale');
+        totalDownloadRate += parseFloat(task['rate_download']);
+        totalUploadRate += parseFloat(task['rate_upload']);
         for (key in task) {
           var value = task[key];
           if (key == 'progress') {
@@ -48,6 +53,7 @@
                 .find('.glyphicon').removeClass('glyphicon-pause').addClass('glyphicon-play')
                 .parent().contents().last().replaceWith('start');
             } else {
+              numTasks++;
               el.find('.action')
                 .attr('href', 'action/' + task.id + '/stop')
                 .removeClass('btn-success').addClass('btn-warning')
@@ -57,6 +63,7 @@
           }
         }
       }
+      $('title').html(totalDownloadRate + '/' + totalUploadRate + ' ' + numTasks + ' running');
       $('.task[data-stale]').parent().parent().remove();
       refreshTasks.timeout = 1000;
     }).fail(function(){
