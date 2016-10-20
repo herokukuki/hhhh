@@ -75,7 +75,7 @@ class TorrentManager(models.Manager):
         if obj.status != torrent.status:
             obj.status = torrent.status
             dirty = True
-        if obj.progress != torrent.progress:
+        if abs(obj.progress - torrent.progress) > 0.0001:
             obj.progress = torrent.progress
             dirty = True
 
