@@ -79,7 +79,7 @@ class TorrentManager(models.Manager):
             obj.progress = torrent.progress
             dirty = True
 
-        if obj.progress == 100.0 and obj.status == 'stopped':
+        if obj.progress == 100.0 and obj.status in ['stopped', 'seeding']:
             download_dir = obj.download_dir().rstrip(os.sep)
             for d in TORRENT_DIRS:
                 if d[1] != download_dir:
