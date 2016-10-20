@@ -105,13 +105,15 @@ class TorrentManager(models.Manager):
                     now = datetime.now()
                     if obj.base().date_done + timedelta(seconds=secs) < now:
                         # Past the expiration date
-                        logging.debug('%s has expired, ignoring', obj)
-                        obj.deleted = True
-                        obj.base_id = -1
-                        dirty = True
-                        break
+                        if not obj.deleted or obj.base_id != -1:
+                            logging.info('%s has expired, ignoring', obj)
+                            obj.deleted = True
+                            obj.base_id = -1
+                            dirty = True
+                            break
 
         if dirty:
+            logging.info('Updating %s', obj)
             obj.save()
         return obj, created
 
@@ -125,7 +127,7 @@ class TorrentManager(models.Manager):
         qs = self.exclude(hash__in=hashes).exclude(deleted=True)
         updated = qs.update(deleted=True, base_id=-1)
         if updated > 0:
-            logging.info('Updated %d torrents', updated)
+            logging.info('Removed %d torrent(s)', updated)
 
     def active(self):
         qs = super(TorrentManager, self).get_query_set()
