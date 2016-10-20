@@ -78,9 +78,6 @@ class TorrentManager(models.Manager):
         if obj.progress != torrent.progress:
             obj.progress = torrent.progress
             dirty = True
-        if obj.deleted:
-            obj.deleted = False
-            dirty = True
 
         if obj.progress == 100.0 and obj.status == 'stopped':
             download_dir = obj.download_dir().rstrip(os.sep)
@@ -110,6 +107,9 @@ class TorrentManager(models.Manager):
                             obj.deleted = True
                             dirty = True
                             break
+        elif obj.deleted:
+            obj.deleted = False
+            dirty = True
 
         if dirty:
             logging.info('Updating %s', obj)
