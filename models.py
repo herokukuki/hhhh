@@ -82,33 +82,34 @@ class TorrentManager(models.Manager):
             obj.deleted = False
             dirty = True
 
-        download_dir = obj.download_dir().rstrip(os.sep)
-        for d in TORRENT_DIRS:
-            if d[1] != download_dir:
-                # These are not the droids you are looking for, move along
-                continue
-            if len(d) > 3:
-                secs = d[3]
-                now = datetime.now()
-                if obj.base().date_done + timedelta(seconds=secs) < now:
-                    # Past the expiration date
-                    logging.info('%s has expired, removing', obj)
-                    result = self.client.remove_torrent(obj.base_id)
-                    logging.info('Result: %s', result)
-                    obj.deleted = True
-                    obj.base_id = -1
-                    dirty = True
-                    break
-            if len(d) > 2:
-                secs = d[2]
-                now = datetime.now()
-                if obj.base().date_done + timedelta(seconds=secs) < now:
-                    # Past the expiration date
-                    logging.debug('%s has expired, ignoring', obj)
-                    obj.deleted = True
-                    obj.base_id = -1
-                    dirty = True
-                    break
+        if obj.progress == 100.0 and obj.status == 'stopped':
+            download_dir = obj.download_dir().rstrip(os.sep)
+            for d in TORRENT_DIRS:
+                if d[1] != download_dir:
+                    # These are not the droids you are looking for, move along
+                    continue
+                if len(d) > 3:
+                    secs = d[3]
+                    now = datetime.now()
+                    if obj.base().date_done + timedelta(seconds=secs) < now:
+                        # Past the expiration date
+                        logging.info('%s has expired, removing', obj)
+                        result = self.client.remove_torrent(obj.base_id)
+                        logging.info('Result: %s', result)
+                        obj.deleted = True
+                        obj.base_id = -1
+                        dirty = True
+                        break
+                if len(d) > 2:
+                    secs = d[2]
+                    now = datetime.now()
+                    if obj.base().date_done + timedelta(seconds=secs) < now:
+                        # Past the expiration date
+                        logging.debug('%s has expired, ignoring', obj)
+                        obj.deleted = True
+                        obj.base_id = -1
+                        dirty = True
+                        break
 
         if dirty:
             obj.save()
