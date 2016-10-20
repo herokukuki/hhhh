@@ -65,7 +65,7 @@
           }
         }
       }
-      $('title').html(totalDownloadRate.toFixed(1) + '↑' + totalUploadRate.toFixed(1) + ' - ' + numTasks + ' running');
+      $('title').html('↓' + (totalDownloadRate/1024).toFixed(1) + '↑' + (totalUploadRate/1024).toFixed(1) + ' - ' + numTasks + ' running');
       $('.task[data-stale]').parent().parent().remove();
       refreshTasks.timeout = 1000;
     }).fail(function(){
