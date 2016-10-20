@@ -105,10 +105,9 @@ class TorrentManager(models.Manager):
                     now = datetime.now()
                     if obj.base().date_done + timedelta(seconds=secs) < now:
                         # Past the expiration date
-                        if not obj.deleted or obj.base_id != -1:
+                        if not obj.deleted:
                             logging.info('%s has expired, ignoring', obj)
                             obj.deleted = True
-                            obj.base_id = -1
                             dirty = True
                             break
 
