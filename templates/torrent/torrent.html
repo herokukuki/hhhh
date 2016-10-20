@@ -35,8 +35,10 @@
           continue;
         }
         el.removeAttr('data-stale');
-        totalDownloadRate += parseFloat(task['rate_download']);
-        totalUploadRate += parseFloat(task['rate_upload']);
+        var r = task['rate_download'];
+        totalDownloadRate += parseFloat(r) * (r.search('MB') == -1 ? 1 : 1024 * 1024) * (r.search('KB') == -1 ? 1 : 1024);
+        r = task['rate_upload'];
+        totalUploadRate += parseFloat(r) * (r.search('MB') == -1 ? 1 : 1024 * 1024) * (r.search('KB') == -1 ? 1 : 1024);
         for (key in task) {
           var value = task[key];
           if (key == 'progress') {
@@ -63,7 +65,7 @@
           }
         }
       }
-      $('title').html(totalDownloadRate + '/' + totalUploadRate + ' ' + numTasks + ' running');
+      $('title').html(totalDownloadRate.toFixed(1) + '↑' + totalUploadRate.toFixed(1) + ' - ' + numTasks + ' running');
       $('.task[data-stale]').parent().parent().remove();
       refreshTasks.timeout = 1000;
     }).fail(function(){
