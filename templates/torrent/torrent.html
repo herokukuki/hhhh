@@ -89,8 +89,8 @@
         var query = result.feed.description.replace(/^Search: /, '');
         var $element = $("*[data-query='" + query + "']")
         $element.empty();
-        for (var i = 0; i < result.feed.entries.length; i++) {
-          var entry = result.feed.entries[i];
+        for (var i = 0; i < result.items.length; i++) {
+          var entry = result.items[i];
           var match = entry.link.match(/([0-9a-fA-F]{40})/);
           var hash = match[1].toLowerCase();
           $element.append(
