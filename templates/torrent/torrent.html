@@ -81,7 +81,7 @@
     //var feed = new google.feeds.Feed("https://torrentzeu.to/rss/search?q=" + query);
     //feed.setNumEntries(100);
     //feed.load(function(result) {
-    var url = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURI("https://torrentzeu.to/rss/search?q=" + query);
+    var url = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("https://torrentzeu.to/rss/search?q=" + query);
     url += "&api_key=9bpk2omdesqozwktjfssekluanpdfas5igsw6cwo";
     $.getJSON(url, function(result) {
       if (!result.error) {
