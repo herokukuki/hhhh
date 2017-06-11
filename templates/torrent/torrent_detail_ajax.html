@@ -1,14 +1,15 @@
+{% with object.fields as fields %}
 <div class="task container-fluid" data-id="{{ object.base_id }}">
   <div class="media row">
     <div class="media-body col-lg-11 col-md-11 col-sm-11 col-xs-12">
       <h4 class="name media-heading">{{ object.name }}</h4>
       <div class="meta text-muted">
         <span class="status">{{ object.status }}</span> -
-        <span class="left_size">{{ object.fields.leftUntilDone.value }}</span> left of
-        <span class="total_size">{{ object.fields.totalSize.value }}</span>
-        (&darr;<span class="rate_download">{{ object.fields.rateDownload.value }}</span>
-        &uarr;<span class="rate_upload">{{ object.fields.rateUpload.value }}</span>)
-        <span class="message text-danger">{{ object.fields.errorString.value }}</span>
+        <span class="left_size">{{ fields.leftUntilDone.value }}</span> left of
+        <span class="total_size">{{ fields.totalSize.value }}</span>
+        (&darr;<span class="rate_download">{{ fields.rateDownload.value }}</span>
+        &uarr;<span class="rate_upload">{{ fields.rateUpload.value }}</span>)
+        <span class="message text-danger">{{ fields.errorString.value }}</span>
         - added <span class="date_added_timesince">{{ object.date_added|timesince }} ago</span>
       </div>
       <div class="progress {{ object.progress_css_class }}"><div class="progress-bar" style="width: {{ object.progress }}%">{{ object.progress|floatformat }}%</div></div>
@@ -28,3 +29,4 @@
     </div>
   </div>
 </div>
+{% endwith %}
