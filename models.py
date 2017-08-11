@@ -129,7 +129,7 @@ class TorrentManager(models.Manager):
             logging.info('Removed %d torrent(s)', updated)
 
     def active(self):
-        qs = super(TorrentManager, self).get_query_set()
+        qs = super(TorrentManager, self).get_queryset()
         return qs.filter(deleted=False)
 
 
