@@ -84,42 +84,44 @@
     var url = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent("http://torrentzeu.to/rss/search?q=" + query);
     url += "&api_key=9bpk2omdesqozwktjfssekluanpdfas5igsw6cwo";
     $.getJSON(url, function(result) {
-      if (!result.error) {
-        //var query = result.feed.description.replace(/ search$/, '');
-        var query = result.feed.description.replace(/^Search: /, '');
-        var $element = $("*[data-query='" + query + "']")
-        $element.empty();
-        for (var i = 0; i < result.items.length; i++) {
-          var entry = result.items[i];
-          var match = entry.link.match(/([0-9a-fA-F]{40})/);
-          var hash = match[1].toLowerCase();
-          $element.append(
-            $('<a>')
-              .addClass('entry list-group-item')
-              .attr({
-                'href': '#' + hash,
-                'data-hash': hash,
-                'data-text': entry.title,
-                'data-query': query,
-                'data-categories': entry.categories.join(' ')
-              })
-              .html(entry.title)
-              .append($('<span>').addClass('pull-right muted').text(entry.content))
-              .click(function(event) {
-                jQuery.get(
-                  '{% url 'torrent_torrent_action' action='add' %}/'+ $(this).attr('data-hash'),
-                  {
-                    'text': $(this).attr('data-text'),
-                    'query': $(this).attr('data-query'),
-                    'categories': $(this).attr('data-categories')
-                  },
-                  function(data) { $('#status').text(data); }
-                );
-                event.preventDefault();
-                return false;
-              })
-          );
-        }
+      if (result.error || result.status == "error") {
+        $('#status').text(result.message);
+        return;
+      }
+      //var query = result.feed.description.replace(/ search$/, '');
+      var query = result.feed.description.replace(/^Search: /, '');
+      var $element = $("*[data-query='" + query + "']")
+      $element.empty();
+      for (var i = 0; i < result.items.length; i++) {
+        var entry = result.items[i];
+        var match = entry.link.match(/([0-9a-fA-F]{40})/);
+        var hash = match[1].toLowerCase();
+        $element.append(
+          $('<a>')
+            .addClass('entry list-group-item')
+            .attr({
+              'href': '#' + hash,
+              'data-hash': hash,
+              'data-text': entry.title,
+              'data-query': query,
+              'data-categories': entry.categories.join(' ')
+            })
+            .html(entry.title)
+            .append($('<span>').addClass('pull-right muted').text(entry.content))
+            .click(function(event) {
+              jQuery.get(
+                '{% url 'torrent_torrent_action' action='add' %}/'+ $(this).attr('data-hash'),
+                {
+                  'text': $(this).attr('data-text'),
+                  'query': $(this).attr('data-query'),
+                  'categories': $(this).attr('data-categories')
+                },
+                function(data) { $('#status').text(data); }
+              );
+              event.preventDefault();
+              return false;
+            })
+        );
       }
     });
   }
