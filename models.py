@@ -37,6 +37,9 @@ class TorrentManager(models.Manager):
     """Manager class for the `Torrent` objects.
     """
     _client = None
+    # Cache of transmissionrpc Torrent objects' fields
+    _torrents = {}
+
     @property
     def client(self):
         if not self._client:
@@ -54,6 +57,9 @@ class TorrentManager(models.Manager):
 
     def get_or_create_from_torrentrpc(self, torrent):
         obj, created = self.get_or_create(hash=torrent.hashString)
+        if torrent.hashString in self._torrents:
+            if self._torrents[torrent.hashString] == torrent._fields:
+                return obj, created
         dirty = False
         if obj.name != torrent.name:
             obj.name = torrent.name
@@ -114,6 +120,7 @@ class TorrentManager(models.Manager):
         if dirty:
             logging.info('Updating %s', obj)
             obj.save()
+        self._torrents[torrent.hashString] = torrent._fields
         return obj, created
 
     def sync(self):
