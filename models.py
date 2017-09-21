@@ -179,11 +179,12 @@ class Torrent(models.Model):
         return self.fields()['downloadDir'].value
 
     def file_url(self):
+        import urllib
         return '/'.join([
             re.sub(
                 TRANSMISSION_DOWNLOAD_ROOT.rstrip(os.sep),
                 TRANSMISSION_DOWNLOAD_URL.rstrip('/'),
-                self.download_dir()
+                urllib.quote(self.download_dir())
             ).replace('\\', '/'),
             self.name
         ])
