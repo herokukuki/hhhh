@@ -3,9 +3,19 @@ import os
 from django.conf import settings
 from django.db.models import Q
 from django.http import Http404, HttpResponse
-from django.views.generic import View, ListView, DetailView
+from django.views.generic import View, ListView, DetailView, TemplateView
 
 from torrent.models import Torrent, TORRENT_DIRS, DEFAULT_DIR
+
+
+class TorrentView(TemplateView):
+
+    template_name = "torrent/torrent.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TorrentView, self).get_context_data(**kwargs)
+        context['TORRENT_DIRS'] = TORRENT_DIRS
+        return context
 
 
 class TorrentList(ListView):
