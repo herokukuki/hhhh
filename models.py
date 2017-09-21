@@ -184,7 +184,7 @@ class Torrent(models.Model):
             re.sub(
                 TRANSMISSION_DOWNLOAD_ROOT.rstrip(os.sep),
                 TRANSMISSION_DOWNLOAD_URL.rstrip('/'),
-                urllib.quote(self.download_dir())
+                self.download_dir()
             ).replace('\\', '/'),
-            self.name
+            urllib.quote(self.name)
         ])
