@@ -1,13 +1,11 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView
 
-from torrent.views import TorrentList, TorrentAction, TorrentDetail
+from torrent.views import TorrentList, TorrentAction, TorrentDetail, TorrentView
 
 urlpatterns = [
     url(r'^$',
-        view=login_required(
-            TemplateView.as_view(template_name="torrent/torrent.html")),
+        view=login_required(TorrentView.as_view()),
         name='torrent',
     ),
     url(r'^(?P<id>[0-9]+)$',
