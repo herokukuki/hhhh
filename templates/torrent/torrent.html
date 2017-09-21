@@ -109,12 +109,14 @@
             .html(entry.title)
             .append($('<span>').addClass('pull-right muted').text(entry.content))
             .click(function(event) {
+              var categories = $(this).attr('data-categories');
+              categories = categories ? categories : $("input[name=category]:checked").val();
               jQuery.get(
                 '{% url 'torrent_torrent_action' action='add' %}/'+ $(this).attr('data-hash'),
                 {
                   'text': $(this).attr('data-text'),
                   'query': $(this).attr('data-query'),
-                  'categories': $(this).attr('data-categories')
+                  'categories': categories
                 },
                 function(data) { $('#status').text(data); }
               );
@@ -197,6 +199,20 @@
           <div class="form-group">
             <div class="col-md-12">
               <input class="form-control" type="text" placeholder="Search" name="q"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-md-12">
+              <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-primary active">
+                <input type="radio" name="category" id="category-none" autocomplete="off" checked> None
+              </label>
+              {% for entry in TORRENT_DIRS %}
+              <label class="btn btn-primary">
+                <input type="radio" name="category" id="category-{{ entry.0 }}" autocomplete="off" value="{{ entry.0 }}"> {{ entry.0 }}
+              </label>
+              {% endfor %}
+            </div>
             </div>
           </div>
           <div class="search-result list-group col-md-12"></div>
